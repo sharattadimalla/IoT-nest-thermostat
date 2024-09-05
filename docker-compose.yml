@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  postgres_db:
+    image: postgres:13-alpine
+    container_name: postgres_db
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data/
+      - ./db/pg_db_init.sql:/docker-entrypoint-initdb.d/pg_db_init.sql
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+    networks:
+      - iot-docker
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - 7869:11434
+    volumes:
+      - ./ollama/ollama:/root/.ollama
+      - ./llm/entrypoint.sh:/entrypoint.sh
+    container_name: ollama_mistral
+    env_file:
+      - .env
+    networks:
+      - iot-docker
+
+volumes:
+  postgres_data:
+
+networks:
+  iot-docker:
+    external: false
